@@ -16,30 +16,31 @@
     utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
+        kernel = pkgs.kernel;
         # systemTypeSupported = "x86_64-linux";
         # pkgs = import nixpkgs { system = systemTypeSupported; };
         # kFlake = import kernelFlake;
         # buildLib = kernelFlake.lib.builders {inherit pkgs;};
         # buildLib = (builtins.getFlake "github:jordanisaacs/kernel-module-flake").outputs.lib.builders; # kinda worked
-     #    buildLib = kernelFlake.outputs.lib.builders; # kinda worked
+        buildLib = kernel.outputs.lib.builders; # kinda worked
      #    # TODO remove again
      #    naersk-lib = pkgs.callPackage naersk { };
 
-     #    packageName = "rust-cpufreq";
+        packageName = "rust-cpufreq";
      #    # default = true; # weird error
      #    # nixosModules.default = {};
      #    # both didn't fix default option doesn't exist
         
-     #    kernelFlake.enableBPF = false;
-     #    kernelFlake.enableEditor = false;
-     #    kernelFlake.enableGdb = false;
-     #    kernelFlake.useRustForLinux = true;
+        kernelFlake.enableBPF = false;
+        kernelFlake.enableEditor = false;
+        kernelFlake.enableGdb = false;
+        kernelFlake.useRustForLinux = true;
 
      #    # used in fail derivation
-     #    sysKernel = kernel.dev;
-     #    kernelVersion = sysKernel.modDirVersion;
+        sysKernel = kernel.dev;
+        kernelVersion = sysKernel.modDirVersion;
 
-     #    # kernelLib = kernelFlake.lib.builders {inherit pkgs;};
+        kernelLib = kernelFlake.lib.builders {inherit pkgs;};
 
      #    # buildLib = pkgs.callPackage ./build {};
 
@@ -47,7 +48,7 @@
      #    # rust-kernel-lib = pkgs.callPackage kernelFlake { };
 
      #    ## TODO put this back in?
-     #    # buildRustModule = kernelLib.buildRustModule {inherit kernel;};
+        buildRustModule = kernelLib.buildRustModule {inherit builtKernel;};
 
      #    ################################################################
      #    ################################################################
@@ -123,34 +124,34 @@
 
         # kernelLib = kernelFlake.lib.builders {inherit pkgs;};
 
-        # buildRustModule = buildLib.buildRustModule {inherit kernel;};
-        # buildCModule = buildLib.buildCModule {inherit kernel;};
+        # buildRustModule = buildLib.buildRustModule {inherit builtKernel;};
+        # buildCModule = buildLib.buildCModule {inherit builtKernel;};
 
-        # configfile = buildLib.buildKernelConfig {
-        #  generateConfigFlags = {};
-        #  structuredExtraConfig = {};
+        configfile = buildLib.buildKernelConfig {
+         generateConfigFlags = {};
+         structuredExtraConfig = {};
 
-        #  inherit kernel nixpkgs;
-        # };
+         inherit builtKernel nixpkgs;
+        };
 
-        # kernel = buildLib.buildKernel {
-        #  inherit configfile;
+        builtKernel = buildLib.buildKernel {
+         inherit configfile;
 
-        #  src = ./kernel-src;
-        #  version = "";
-        #  modDirVersion = "";
-        # };
+         src = ./kernel-src;
+         version = "";
+         modDirVersion = "";
+        };
 
-        # modules = [cpuFileFreqModule];
+        modules = [cpuFileFreqModule];
 
-        # initramfs = buildLib.buildInitramfs {
-        #  inherit kernel modules;
-        # };
+        initramfs = buildLib.buildInitramfs {
+         inherit builtKernel modules;
+        };
 
-        # cpuFileFreqModule = buildRustModule { name = "cpu-file-freq-module"; src = ./src.; };
+        cpuFileFreqModule = buildRustModule { name = "cpu-file-freq-module"; src = ./src.; };
 
-        # runQemu = buildLib.buildQemuCmd {inherit kernel initramfs;};
-        # runGdb = buildLib.buildGdbCmd {inherit kernel modules;};
+        runQemu = buildLib.buildQemuCmd {inherit builtKernel initramfs;};
+        runGdb = buildLib.buildGdbCmd {inherit builtKernel modules;};
       in
       {
         # want first one and no naersk
@@ -205,12 +206,13 @@
             # runHook preInstall
           # todo move 6.3.5 to variable like https://blog.prag.dev/building-kernel-modules-on-nixos
           installPhase = ''
-            mkdir -p $out/lib/modules/6.3.8/misc
+            mkdir -p $out/lib/modules/$kernelVersion/misc
             pwd
             ls -lah
+            echo $out
 
-            cp ./rust_out_of_tree.ko $out/lib/modules/6.3.8/misc
-            ls -lah $out/lib/modules/6.3.8/misc
+            cp ./rust_out_of_tree.ko $out/lib/modules/$kernelVersion/misc
+            ls -lah $out/lib/modules/$kernelVersion/misc
           '';
           # https://nixos.org/manual/nixpkgs/stable/#sec-stdenv-phases
           # above just makes a local version and not the system one....
