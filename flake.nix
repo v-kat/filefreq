@@ -15,83 +15,102 @@
   # outputs = { self, nixpkgs, utils, kernelFlake }:
     utils.lib.eachDefaultSystem (system:
       let
-        # pkgs = import nixpkgs { inherit system; };
-        systemTypeSupported = "x86_64-linux";
-        pkgs = import nixpkgs { system = systemTypeSupported; };
+        pkgs = import nixpkgs { inherit system; };
+        # systemTypeSupported = "x86_64-linux";
+        # pkgs = import nixpkgs { system = systemTypeSupported; };
         # kFlake = import kernelFlake;
         # buildLib = kernelFlake.lib.builders {inherit pkgs;};
         # buildLib = (builtins.getFlake "github:jordanisaacs/kernel-module-flake").outputs.lib.builders; # kinda worked
-        buildLib = kernelFlake.outputs.lib.builders; # kinda worked
-        # TODO remove again
-        naersk-lib = pkgs.callPackage naersk { };
+     #    buildLib = kernelFlake.outputs.lib.builders; # kinda worked
+     #    # TODO remove again
+     #    naersk-lib = pkgs.callPackage naersk { };
 
-        packageName = "rust-cpufreq";
+     #    packageName = "rust-cpufreq";
+     #    # default = true; # weird error
+     #    # nixosModules.default = {};
+     #    # both didn't fix default option doesn't exist
         
-        kernelFlake.enableBPF = false;
-        kernelFlake.enableEditor = false;
-        kernelFlake.enableGdb = false;
-        kernelFlake.useRustForLinux = true;
+     #    kernelFlake.enableBPF = false;
+     #    kernelFlake.enableEditor = false;
+     #    kernelFlake.enableGdb = false;
+     #    kernelFlake.useRustForLinux = true;
 
-        # kernelLib = kernelFlake.lib.builders {inherit pkgs;};
+     #    # used in fail derivation
+     #    sysKernel = kernel.dev;
+     #    kernelVersion = sysKernel.modDirVersion;
 
-        # buildLib = pkgs.callPackage ./build {};
+     #    # kernelLib = kernelFlake.lib.builders {inherit pkgs;};
 
-        # TODO was last trying below for some reason
-        # rust-kernel-lib = pkgs.callPackage kernelFlake { };
+     #    # buildLib = pkgs.callPackage ./build {};
 
-        ## TODO put this back in?
-        # buildRustModule = kernelLib.buildRustModule {inherit kernel;};
+     #    # TODO was last trying below for some reason
+     #    # rust-kernel-lib = pkgs.callPackage kernelFlake { };
 
-        ################################################################
-        ################################################################
-        # TODO can probably just use https://github.com/Rust-for-Linux/rust-out-of-tree-module
-        ## can toss this out and not bother with a flake and just do thang
-        ## still don't understand flake outputs and stuff
-        ## this flake is using the above and some other stuff I don't want
+     #    ## TODO put this back in?
+     #    # buildRustModule = kernelLib.buildRustModule {inherit kernel;};
 
-        ## remove naersk again 
-        ## see about including kernel and buildRustModule
-        ## understand defaultPackage stuff
-        ## put in runQemu and also maybe get rid of flake utils
-        ## check chatgpt for eachDefaultSystem
-        ############################################################### 
-        ############################################################### 
+     #    ################################################################
+     #    ################################################################
+     #    # TODO can probably just use https://github.com/Rust-for-Linux/rust-out-of-tree-module
+     #    ## can toss this out and not bother with a flake and just do thang
+     #    ## still don't understand flake outputs and stuff
+     #    ## this flake is using the above and some other stuff I don't want
 
-        # kernelLib = kernelFlake.lib.builders {inherit pkgs;};
+     #    ## remove naersk again 
+     #    ## see about including kernel and buildRustModule
+     #    ## understand defaultPackage stuff
+     #    ## put in runQemu and also maybe get rid of flake utils
+     #    ## check chatgpt for eachDefaultSystem
+     #    ############################################################### 
+     #    ############################################################### 
 
-     #    system = "x86_64-system";
-     # pkgs2 = nixpkgs.legacyPackages.${system};
+     #    # kernelLib = kernelFlake.lib.builders {inherit pkgs;};
 
-     # kernelFlake' = pkgs.callPackage kernelFlake {};
-     # builtins.trace kernelFlake true;
+     # #    system = "x86_64-system";
+     # # pkgs2 = nixpkgs.legacyPackages.${system};
+
+     # # kernelFlake' = pkgs.callPackage kernelFlake {};
+     # # builtins.trace kernelFlake true;
 
 
-     # buildLib = kernelFlake.lib.builders {inherit pkgs;};
+     # # buildLib = kernelFlake.lib.builders {inherit pkgs;};
 
-        # buildLib = kernelFlake.outputs.lib.builders;
+     #    # buildLib = kernelFlake.outputs.lib.builders;
 
-        configfile = buildLib.buildKernelConfig {
-          generateConfigFlags = {};
-          structuredExtraConfig = {};
+     #    configfile = buildLib.buildKernelConfig {
+     #      generateConfigFlags = {};
+     #      structuredExtraConfig = {};
 
-          inherit kernel nixpkgs;
-        };
+     #      inherit kernel nixpkgs;
+     #    };
 
-        kernel = buildLib.buildKernel {
-         inherit configfile;
+     #    kernel = buildLib.buildKernel {
+     #     inherit configfile;
 
-         src = ./linux;
-         version = "";
-         modDirVersion = "";
-        };
+     #     src = ./linux;
+     #     version = "";
+     #     modDirVersion = "";
+     #    };
 
-        buildRustModule = buildLib.buildRustModule {inherit kernel;};
-        # cpuFileFreqModule = kernelLib.buildRustModule { 
-        # kernelFlake.rustModule = {}; 
-        cpuFileFreqModule = buildLib.buildRustModule { 
-          name = packageName; 
-          src = ./.; 
-        };
+     #    buildRustModule = buildLib.buildRustModule {inherit kernel;};
+     #    # cpuFileFreqModule = kernelLib.buildRustModule { 
+     #    # kernelFlake.rustModule = {}; 
+     #    cpuFileFreqModule = buildLib.buildRustModule { 
+     #      name = packageName; 
+     #      src = ./.; 
+     #    };
+
+     #     modules = [exampleModule];
+
+     #     initramfs = buildLib.buildInitramfs {
+     #       inherit kernel modules;
+     #     };
+
+     #     exampleModule = cpuFileFreqModule;
+
+     #     runQemu = buildLib.buildQemuCmd {inherit kernel initramfs;};
+         # ^ this might be a package
+
         # cpuFileFreqModule = rust-kernel-lib.buildRustModule { name = "rust-cpufreq"; src = ./.; };
 
         # cpuFileFreqModule = pkgs.callPackage buildLib.buildRustModule { name = "rust-cpufreq"; src = ./.; };
@@ -137,11 +156,78 @@
         # want first one and no naersk
         # defaultPackage = cpuFileFreqModule;
 
-        # packages.x86_64-linux.hello = /* something here */;
+        # packages.x86_64-linux.hello = runQemu;
         # packages.${packageName} = cpuFileFreqModule;
 
-        defaultPackage = naersk-lib.buildPackage ./.;
+        devShell = pkgs.mkShell {
+          inputsFrom = builtins.attrValues self.packages.${system};
+          # run-qemu might be a package 
+            # buildQemuCmd = pkgs.callPackage ./run-qemu.nix {};
+
+          buildInputs = [ pkgs.cargo pkgs.rust-analyzer pkgs.clippy ];
+        };
+
+        # defaultPackage = naersk-lib.buildPackage ./.;
+        defaultPackage = pkgs.stdenv.mkDerivation {
+          name = "rust-cpufreq";
+          # src = "/home/abysm/kernel-module-flake";
+          # src = "/home/abysm/rust-cpufreq";
+          src = ./src;
+          # src = "./rust-cpufreq";
+          # src = "./src";
+
+          buildPhase = ''
+          '';
+          # unpackPhase = "true"; # this is needed for source code to be included
+
+            # pwd
+            # ls -lah
+            # cd ..
+            # ls -lah
+            # pwd
+            # cd /tmp
+            # ls -lah
+            # pwd
+            # cd ..
+            # cd /bin
+            # ls -lah
+            # pwd
+            # cd ..
+            # cd /dev
+            # ls -lah
+            # pwd
+            # cd ..
+            # cd /nix
+            # ls -lah
+            # pwd
+            # cd ..
+
+            # runHook preInstall
+          # todo move 6.3.5 to variable like https://blog.prag.dev/building-kernel-modules-on-nixos
+          installPhase = ''
+            mkdir -p $out/lib/modules/6.3.8/misc
+            pwd
+            ls -lah
+
+            cp ./rust_out_of_tree.ko $out/lib/modules/6.3.8/misc
+            ls -lah $out/lib/modules/6.3.8/misc
+          '';
+          # https://nixos.org/manual/nixpkgs/stable/#sec-stdenv-phases
+          # above just makes a local version and not the system one....
+
+              # cp $x $out/lib/modules/$kernelVersion/misc/
+            # mkdir -p $out/lib/modules/$kernelVersion/misc
+
+          # tried to hackily copy in a bin to root....
+
+
+              # nuke-refs $x
+            # runHook postInstall
+            # cp ./rust_out_of_tree.ko $out/lib/modules/$kernelVersion/misc/
+          meta.platforms = ["x86_64-linux"];
+        };
         # defaultPackage = self.packages.${systemTypeSupported}.${packageName};
+        # call package instantiates and returns the package
         
 
         # defaultPackage.${systemTypeSupported} = ./;
