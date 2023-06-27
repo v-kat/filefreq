@@ -171,6 +171,7 @@
         # defaultPackage = naersk-lib.buildPackage ./.;
         defaultPackage = pkgs.stdenv.mkDerivation {
           name = "rust-cpufreq";
+          pname = "rust-cpufreq"; # might not be necessary
           # src = "/home/abysm/kernel-module-flake";
           # src = "/home/abysm/rust-cpufreq";
           src = ./src;
