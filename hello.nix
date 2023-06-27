@@ -32,8 +32,8 @@ let
 
 in
   pkgs.stdenv.mkDerivation {
-    pname = "my-hello";
-    version = "1.0";
+    pname = "rust_out_of_tree";
+    version = "1.21";
     src = ./src;
     hardeningDisable = [ "pic" "format" ];                                             # 1
     # linuxDev = pkgs.linuxPackagesFor kernelDrv;
@@ -51,6 +51,11 @@ in
     # TODO - make another rust_out_of_tree with explicitly code 6.3.8
     # make sure can use sudo insmod on that 1
 
+    buildFlags = [ "module" ];
+    installTargets = [ "module-install" ];
+
+
+    # sudo insmod /run/current-system/kernel-modules/lib/modules/6.3.8/misc/rust_out_of_tree.ko
 
     buildPhase = ''
     '';
@@ -64,8 +69,14 @@ in
       ls -lah $out/lib/modules/6.3.8/misc
       pwd
       # echo $out
+      chmod +755 ./rust_out_of_tree.ko
       cp ./rust_out_of_tree.ko $out/lib/modules/6.3.8/misc
     '';
+
+    postInstall = ''
+    '';
+
+    dontFixup = true;
     # shellHook = ''
     #   echo "hi again"
     # '';
