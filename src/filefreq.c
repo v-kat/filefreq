@@ -64,25 +64,19 @@ static int __init filefreq_init(void)
       struct file *filp;
       ssize_t ret;
       char lameBuffer[128] = "";
-      size_t lenBuffer = strlen(lameBuffer);
       const char *lowMhz = " 1000000"; // adding 1 ghz to downscale more default the system has is 1900000 1800000 1600000 
       size_t lenLowMhz = strlen(lowMhz);
       loff_t pos;
-      int num_chars;
       
       printk(KERN_INFO "filefreq starting the loop \n");
-      num_chars = snprintk(lameBuffer, lenBuffer, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_available_frequencies\0", i);
-      if (num_chars > sizeof(lameBuffer) - lenBuffer) // doesn't handle buffer things too well....
-      {    
-        printk(KERN_ERR "filefreq buffer was too small for freqFilePath \n");
-        return -1;
-      }
+      sprintf(lameBuffer, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_available_frequencies", i);
 
       printk(KERN_INFO "filefreq before opening file \n");
-      filp = filp_open(lameBuffer, O_WRONLY, 0644);
+      // filp = filp_open(lameBuffer, O_WRONLY, 0644);
+      filp = filp_open("/home/abysm/rust-cpufreq/test.txt", O_WRONLY, 0644);
       if (IS_ERR(filp))
       {  
-        printk(KERN_ERR "filefreq failed to open file %s \n", num_chars);
+        printk(KERN_ERR "filefreq failed to open file %s with err: %ld \n", lameBuffer, PTR_ERR(filp));
         return -1;
       }
 
