@@ -69,17 +69,14 @@ static int __init filefreq_init(void)
       size_t lenLowMhz = strlen(lowMhz);
       loff_t pos;
       int num_chars;
+      char *filePath;
       
       printk(KERN_INFO "filefreq starting the loop \n");
-      num_chars = snprintk(lameBuffer, lenBuffer, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_available_frequencies\0", i);
-      if (num_chars > sizeof(lameBuffer) - lenBuffer) // doesn't handle buffer things too well....
-      {    
-        printk(KERN_ERR "filefreq buffer was too small for freqFilePath \n");
-        return -1;
-      }
+      filePath = strcat("/sys/devices/system/cpu/cpu", itoa(i));
+      filePath = strcat(filePath, "/cpufreq/scaling_available_frequencies\0");
 
       printk(KERN_INFO "filefreq before opening file \n");
-      filp = filp_open(lameBuffer, O_WRONLY, 0644);
+      filp = filp_open(filePath, O_WRONLY, 0644);
       if (IS_ERR(filp))
       {  
         printk(KERN_ERR "filefreq failed to open file %s \n", num_chars);
