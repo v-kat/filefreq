@@ -29,11 +29,11 @@ static int __init filefreq_init(void)
       const char *lowMhz = "1000000\n"; // adding 1 ghz to downscale more than the 1600000 default 
       size_t lenLowMhz = strlen(lowMhz);
       
-      sprintf(lameBuffer, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq", i); // on current architecture just gets overriden back
+      sprintf(lameBuffer, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_setspeed", i); // on without userspace governer just gets overriden back
       printk(KERN_INFO "filefreq modifying %s \n", lameBuffer);
 
       printk(KERN_INFO "filefreq before opening file \n");
-      filp = filp_open(lameBuffer, O_TRUNC | O_RDWR | O_CREAT, 0744); // scaling_min_freq with 0744 returns -9 error code
+      filp = filp_open(lameBuffer, O_TRUNC | O_RDWR | O_CREAT, 0744);
       if (IS_ERR(filp))
       {  
         printk(KERN_ERR "filefreq failed to open file %s with err: %ld \n", lameBuffer, PTR_ERR(filp));

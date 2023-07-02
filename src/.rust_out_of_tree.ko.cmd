@@ -1,1 +1,0 @@
-cmd_/home/abysm/kernel-module-flake/modules/rust/rust_out_of_tree.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=none  -T scripts/module.lds -o /home/abysm/kernel-module-flake/modules/rust/rust_out_of_tree.ko /home/abysm/kernel-module-flake/modules/rust/rust_out_of_tree.o /home/abysm/kernel-module-flake/modules/rust/rust_out_of_tree.mod.o;  true
