@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, kernel, kmod }:
+{ stdenv, lib, kernel }:
 
 stdenv.mkDerivation rec {
   name = "filefreq-${version}-${kernel.version}";
@@ -6,40 +6,19 @@ stdenv.mkDerivation rec {
 
   src = ./src;
 
-  # sourceRoot = "source/linux/v4l2loopback";
-  hardeningDisable = [ "pic" "format" ];                                             # 1
-  nativeBuildInputs = kernel.moduleBuildDependencies;                       # 2
+  hardeningDisable = [ "pic" "format" ];
+  nativeBuildInputs = kernel.moduleBuildDependencies;
   KERNEL = kernel.dev;
   KERNEL_VERSION = kernel.modDirVersion;
   buildInputs = [kernel.dev];
 
-    # make -C $(nix-build -E '(import <nixpkgs> {}).linuxPackages_latest.kernel.dev' --no-out-link)/lib/modules/*/build M=$(pwd) modules obj-m=cpufreq.o
-  # buildPhase = ''
-  #   pwd
-  #   ls -lah
-  #   make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$(pwd) modules obj-m=filefreq.o
-  # '';
-  # builder = ;
   installPhase = ''
     mkdir -p $out/lib/modules/${KERNEL_VERSION}/misc
-    pwd
-    ls -lah
-    echo "${KERNEL_VERSION}/laaahh"
-
-    ls -lah $out/lib/modules/${KERNEL_VERSION}/misc
-    pwd
-    # echo $out
-    # chmod +755 ./filefreq.ko
     cp ./filefreq.ko $out/lib/modules/${KERNEL_VERSION}/misc
   '';
 
-  # postInstall = ''
-  # '';
-
-  # dontFixup = true;
-
   meta = with lib; {
-    description = "A kernel module to add a value a cpu frequency file for auto-cpufreq to be able to downthrottle";
+    description = "A kernel module to add a value a cpu frequency file for auto-cpufreq to be able to downthrottle - limited by architecture";
     homepage = "";
     license = licenses.gpl2;
     maintainers = [ maintainers.makefu ];
