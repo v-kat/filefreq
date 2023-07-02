@@ -13,7 +13,7 @@ boot.extraModulePackages = [ filefreq ];
 * check that the module loads `dmesg | grep "filefreq"`
 * Might need your cpufreq governor set to "userspace"
 * This assumes 8 cores and I might go back and modify the code. For now you can modify the 16 in a for loop to change it
-* Also just settings to 1GHz to down throttle but ran into architecture support with modifying "scaling_available_frequencies"
+* Also just settings min to 1GHz to down throttle but ran into architecture support with modifying "scaling_available_frequencies"
 
 ### About
 * Was trying to learn more about nix. Initially tried a kernel flake library https://github.com/jordanisaacs/kernel-module-flake as a builder but was hard to keep it in sync with local kernel version and settings. 
