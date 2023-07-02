@@ -1,9 +1,14 @@
 ## NixOS Filefreq - out of tree kernel module derivation
 
 ### How to Install
-* clone the repository and place the following in your on top of your `configuration.nix`
-* ```filefreq = config.boot.kernelPackages.callPackage /cloned-dir/filefreq.nix {};```
-* In your `configuration.nix` place `boot.extraModulePackages = [ filefreq ];`
+* clone the repository (`git clone git@github.com:v-kat/filefreq.git`) and place the following on top of your `configuration.nix`:
+```nix
+filefreq = config.boot.kernelPackages.callPackage /cloned-directory/filefreq/filefreq.nix {};
+```
+* In your `configuration.nix` place 
+```nix
+boot.extraModulePackages = [ filefreq ];
+```
 * rebuild and switch `sudo nixos-rebuild switch` then `sudo insmod /run/current-system/kernel-modules/lib/modules/*/misc/filefreq.ko`
 * check that the module loads `dmesg | grep "filefreq"`
 * Might need your cpufreq governor set to "userspace"
