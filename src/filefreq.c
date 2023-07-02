@@ -66,13 +66,13 @@ static int __init filefreq_init(void)
       struct file *filp;
       ssize_t ret;
       char lameBuffer[128] = "";
-      // const char *lowMhz = " 1000000"; // adding 1 ghz to downscale more default the system has is 1900000 1800000 1600000 
-      const char *lowMhz = "1000000\n"; // adding 1 ghz to downscale more than the 1600000 default 
+      const char *lowMhz = " 1000000\n"; // adding 1 ghz to downscale more default the system has is 1900000 1800000 1600000 
+      // const char *lowMhz = "1000000\n"; // adding 1 ghz to downscale more than the 1600000 default 
       size_t lenLowMhz = strlen(lowMhz);
-      // loff_t pos;
+      loff_t pos;
       
       // sprintf(lameBuffer, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_available_frequencies", i);
-      sprintf(lameBuffer, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq", i);
+      sprintf(lameBuffer, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_available_frequencies", i);
       printk(KERN_INFO "filefreq modifying %s \n", lameBuffer);
 
       // filp = filp_open(lameBuffer, O_RDONLY, 444);
@@ -118,7 +118,7 @@ static int __init filefreq_init(void)
       // filp = filp_open("/home/abysm/rust-cpufreq/bahhh/text.txt", O_DIRECTORY | O_RDWR | O_CREAT, 0744);
       // filp = filp_open(lameBuffer, O_RDWR | O_CREAT, 0744);
       // filp = filp_open("/home/abysm/rust-cpufreq/text.txt", O_TRUNC | O_RDWR | O_CREAT, 0744); // scaling_min_freq with 0744 returns -9 error code till added O_RDWR
-      filp = filp_open(lameBuffer, O_TRUNC | O_RDWR | O_CREAT, 0744); // scaling_min_freq with 0744 returns -9 error code
+      filp = filp_open(lameBuffer, O_RDWR | O_CREAT, 0744); // scaling_min_freq with 0744 returns -9 error code
       if (IS_ERR(filp))
       {  
         // printk(KERN_ERR "filefreq failed to open file %s with err: %ld \n", "/home/abysm/rust-cpufreq/zah/blahhh.txt", PTR_ERR(filp));
@@ -127,16 +127,16 @@ static int __init filefreq_init(void)
         return -1;
       }
 
-      // pos = vfs_llseek(filp, 0, SEEK_END); // how much to offset from the file
+      pos = vfs_llseek(filp, 0, SEEK_END); // how much to offset from the file
 
-      ret = kernel_write(filp, lowMhz, lenLowMhz,  &filp->f_pos);
+      ret = kernel_write(filp, lowMhz, lenLowMhz, &pos);
       if (ret < 0) 
       {
         printk(KERN_ERR "filefreq failed to write to file %s with ret %zu \n", lameBuffer, ret);
         return ret;
       }
-
     }
+
     printk(KERN_INFO "filefreq seems to have successfully run \n");
     return 0;
 }
