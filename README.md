@@ -19,3 +19,4 @@ boot.extraModulePackages = [ filefreq ];
 * Was trying to learn more about nix. Initially tried a kernel flake library https://github.com/jordanisaacs/kernel-module-flake as a builder but was hard to keep it in sync with local kernel version and settings. 
 * I also wanted to use rust but out of tree kernel module documentation for 6.3 and 6.4 isn't good or really existent.
 * Might look at the acpi cpufreq driver in the future to see about adding more than 3 frequencies and other changes. 
+* I'm trying the https://www.kernel.org/doc/html/latest/admin-guide/pm/amd-pstate.html for now and my main laptop isn't very compatible with mucking with things much further >.<
